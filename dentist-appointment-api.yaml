@@ -1,0 +1,353 @@
+openapi: 3.0.0
+info:
+  title: Dentist Appointment API
+  description: API for managing Dentist Appointment
+  version: 1.0.0
+servers:
+  - url: http://localhost:7070
+paths:
+  /dentist-appointment:
+    get:
+      summary: Get all dentist appointment
+      responses:
+        '200':
+          description: All dentist appointment
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DentistAppointmentList'
+    post:
+      summary: Add a new appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DentistAppointmentInput'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+    delete:
+      summary: Delete all appointments
+      responses:
+        '204':
+          description: All appointments are deleted successfully
+    put:
+      summary: Update all appointments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DentistAppointmentList'
+      responses:
+        '200':
+          description: All appointments are updated successfully
+  /dentist-appointment/{appointmentId}:
+    parameters:
+      - name: appointmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get an appointment by ID
+      responses:
+        '200':
+          description: one appointment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DentistAppointment'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: appointment not found
+    put:
+      summary: Update an appointment by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DentistAppointmentInput'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete an appointment by ID
+      responses:
+        '204':
+          description: The appointment is deleted successfully
+        '404':
+          description: Not Found
+  /dentist-appointment/search:
+    get:
+      summary: Search an appointment
+      parameters:
+        - name: id
+          in: query
+          description: appointment provided by the id
+          schema:
+            type: string
+        - name: dentist
+          in: query
+          description: dentist name
+          schema:
+            type: string
+        - name: patient
+          in: query
+          description: Patient name
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Start date of the time period
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date of the time period
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: A list of all appointment matching the search criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DentistAppointment'
+components:
+  schemas:
+    Dentist:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Dr. Tamim
+        specialty:
+          type: string
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Pial
+        dob:
+          type: string
+          format: date
+          example: 1992-03-25
+    DentistInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Dr. Sakib
+        specialty:
+          type: string
+    PatientInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Pial
+        dob:
+          type: string
+          format: date
+          example: 1994-07-25
+    DentistAppointment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        dentist:
+          $ref: '#/components/schemas/Dentist'
+        patient:
+          $ref: '#/components/schemas/Patient'
+        date:
+          type: string
+          format: date
+          example: 2023-11-20
+        time:
+          type: string
+          example: 10:00 AM
+        status:
+          type: string
+          description: dentist appointment status
+          example: Scheduled
+          enum:
+          - Scheduled
+          - Completed
+          - Canceled
+          - Pending
+    DentistAppointmentInput:
+      type: object
+      properties:
+        dentist:
+          $ref: '#/components/schemas/DentistInput'
+        patient:
+          $ref: '#/components/schemas/PatientInput'
+        dob:
+          type: string
+          format: date
+          example: 1990-05-15
+        date:
+          type: string
+          format: date
+          example: 2023-11-20
+        time:
+          type: string
+          example: 10:00 AM
+        status:
+          type: string
+          description: dentist appointment status
+          example: Scheduled
+          enum:
+          - Scheduled
+          - Completed
+          - Cancele
+          - Pending
+    DentistAppointmentList:
+      type: array
+      items: 
+       $ref: '#/components/schemas/DentistAppointment'
+      example:
+        - id: 101
+          dentist:
+            id: 1
+            name: Dr. Tamim
+          patient:
+            id: 1
+            name: Pial
+            dob: 1990-05-20
+          date: 2023-12-05
+          time: 6:00 PM
+          status: Scheduled
+        
+        - id: 102
+          dentist:
+            id: 2
+            name: Dr. Saif
+          patient:
+            id: 2
+            name: Iqbal
+            dob: 1994-05-21
+          date: 2023-11-21
+          time: 05:30 PM
+          status: Completed
+        
+        - id: 103
+          dentist:
+            id: 3
+            name: Dr. Jamal
+          patient:
+            id: 3
+            name: Mozahid
+            dob: 1993-03-18
+          date: 2023-11-25
+          time: 8:30 AM
+          status: Canceled
+        
+        - id: 104
+          dentist:
+            id: 4
+            name: Dr. Miraz
+          patient:
+            id: 4
+            name: Binod kc
+            dob: 1995-12-05
+          date: 2023-11-21
+          time: 03:00 PM
+          status: Scheduled
+        
+        - id: 105
+          dentist:
+            id: 5
+            name: Dr. Sakib
+          patient:
+            id: 5
+            name: Niruj Khadka
+            dob: 1988-06-15
+          date: 2023-12-03
+          time: 09:00 AM
+          status: Pending
+        
+        - id: 106
+          dentist:
+            id: 6
+            name: Dr. Riad
+          patient:
+            id: 6
+            name: Ahmed Uddin
+            dob: 1989-07-13
+          date: 2023-12-02
+          time: 1:30 PM
+          status: Scheduled
+        
+        - id: 107
+          dentist:
+            id: 7
+            name: Dr. Mushfiq
+          patient:
+            id: 7
+            name: Nahid Kamal
+            dob: 1991-03-10
+          date: 2023-11-24
+          time: 12:30 AM
+          status: Scheduled
+        
+        - id: 108
+          dentist:
+            id: 8
+            name: Dr. Liton
+          patient:
+            id: 8
+            name: Monjur Himu
+            dob: 1985-10-20
+          date: 2023-11-25
+          time: 04:15 PM
+          status: Scheduled
+        
+        - id: 109
+          dentist:
+            id: 9
+            name: Dr. Shanto
+          patient:
+            id: 9
+            name: Ibrahim Kardi
+            dob: 1987-04-11
+          date: 2023-11-26
+          time: 11:00 AM
+          status: Pending
+        
+        - id: 110
+          dentist:
+            id: 10
+            name: Dr. Hridoy
+          patient:
+            id: 10
+            name: Shuvro Sarkar
+            dob: 1988-03-11
+          date: 2023-11-27
+          time: 02:00 PM
+          status: Pending
